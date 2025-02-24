@@ -20,7 +20,9 @@ services:
         <<: *common-vars
         image: vision-main:ceiling-cam
         container_name: ceiling-cam
+        privileged: true
         volumes:
+            - /dev:/dev
             # X11 socket
             - /tmp/.X11-unix:/tmp/.X11-unix
             - $HOME/.Xauthority:/home/gui/.Xauthority
@@ -28,6 +30,8 @@ services:
             - $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:/tmp/$WAYLAND_DISPLAY
             # GUI configuration
             - $PWD/../gstcam-pkg:/home/ceiling-cam/vision-ws/src/gstcam
+        device_cgroup_rules:
+            - "c 81:* rmw"
         environment:
             DISPLAY: $DISPLAY
             RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
