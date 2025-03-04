@@ -9,7 +9,6 @@ x-common-vars: &common-vars
   environment:
     RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
     ROS_DOMAIN_ID: 60
-
 services:
     ceiling-cam:
         build:
@@ -29,14 +28,20 @@ services:
             # Wayland socket
             - $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:/tmp/$WAYLAND_DISPLAY
             # GUI configuration
-            - $PWD/../gstcam-pkg:/home/ceiling-cam/vision-ws/src/gstcam
+            - $PWD/../rtspcam-pkg:/home/ceiling-cam/vision-ws/src/rtsp_ros
         device_cgroup_rules:
             - "c 81:* rmw"
         environment:
             DISPLAY: $DISPLAY
             RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
             ROS_DOMAIN_ID: 60
-        command: bash
+        command: >
+            bash -c "
+            source /opt/ros/humble/setup.bash && \
+            colcon build && \
+            source /home/ceiling-cam/vision-ws/install/setup.bash && \
+            ros2 launch rtsp_ros rtsp_cam.launch.py
+            "
     groundtruth:
         build:
             context: .
@@ -47,6 +52,12 @@ services:
         image: vision-main:groundtruth
         container_name: groundtruth
         volumes:
-            - $PWD/../groundtruth-pkg:/home/groundtruth/vision-ws/src/groundtruth-ros
-        command: bash
+            - $PWD/../groundtruth-pkg:/home/groundtruth/vision-ws/src/aruco-ros
+        command: >
+            bash -c "
+            source /opt/ros/humble/setup.bash && \
+            colcon build && \
+            source /home/groundtruth/vision-ws/install/setup.bash && \
+            ros2 launch aruco_ros single.launch.py
+            "
             

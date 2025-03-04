@@ -50,7 +50,7 @@ RUN groupadd --gid $USER_GID $USER && \
 USER $USER
 RUN mkdir -p /home/$USER/vision-ws/src
     # Install ROS2 Aruco package
-    # git clone --branch humble-devel https://github.com/pal-robotics/aruco_ros.git /home/$USER/vision-ws/src/aruco-ros && \
+    # git clone --branch 0.7.0 https://github.com/ros-drivers/usb_cam.git && \
     # rosdep update && \
     # rosdep install -i --from-path /home/$USER/vision-ws/src --rosdistro humble -y && \
     # cd /home/$USER/vision-ws && \
