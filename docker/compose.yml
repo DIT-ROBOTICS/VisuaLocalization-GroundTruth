@@ -52,6 +52,6 @@ services:
         image: vision-main:groundtruth
         container_name: groundtruth
         volumes:
-            - $PWD/../groundtruth-pkg:/home/groundtruth/vision-ws/src/groundtruth-ros
+            - $PWD/../groundtruth-pkg:/home/groundtruth/vision-ws/src/aruco-ros
         command: bash
             
