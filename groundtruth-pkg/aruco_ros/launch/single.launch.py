@@ -49,8 +49,8 @@ def launch_setup(context, *args, **kwargs):
         executable='single',
         name = 'ceiling_robot',
         parameters=[robot_params],
-        remappings=[('/camera_info', '/ceiling/camera_info'),
-                    ('/image', '/ceiling/image_rect')],
+        remappings=[('/camera_info', '/ceiling_cam/camera_info'),
+                    ('/image', '/ceiling_cam/image_rect')],
     )
 
     rival = Node(
@@ -58,8 +58,8 @@ def launch_setup(context, *args, **kwargs):
         executable='single',
         name = 'ceiling_rival',
         parameters=[rival_params],
-        remappings=[('/camera_info', '/ceiling/camera_info'),
-                    ('/image', '/ceiling/image_rect')],
+        remappings=[('/camera_info', '/ceiling_cam/camera_info'),
+                    ('/image', '/ceiling_cam/image_rect')],
     )
 
     return [robot,rival]

@@ -301,7 +301,7 @@ public:
             stampedTransform.header.stamp = curr_stamp;
             stampedTransform.child_frame_id = marker_frame;
             tf2::toMsg(transform, stampedTransform.transform);
-            tf_broadcaster_->sendTransform(stampedTransform);
+            //tf_broadcaster_->sendTransform(stampedTransform);
             geometry_msgs::msg::PoseStamped poseMsg;
             poseMsg.header = stampedTransform.header;
             tf2::toMsg(transform, poseMsg.pose);

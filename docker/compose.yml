@@ -53,5 +53,11 @@ services:
         container_name: groundtruth
         volumes:
             - $PWD/../groundtruth-pkg:/home/groundtruth/vision-ws/src/aruco-ros
-        command: bash
+        command: >
+            bash -c "
+            source /opt/ros/humble/setup.bash && \
+            colcon build && \
+            source /home/groundtruth/vision-ws/install/setup.bash && \
+            ros2 launch aruco_ros single.launch.py
+            "
             
