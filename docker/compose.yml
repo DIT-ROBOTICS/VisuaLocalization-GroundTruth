@@ -8,7 +8,7 @@ x-common-vars: &common-vars
   stop_grace_period: 1s
   environment:
     RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
-    ROS_DOMAIN_ID: 60
+    ROS_DOMAIN_ID: 11
 services:
     ceiling-cam:
         build:
@@ -34,7 +34,7 @@ services:
         environment:
             DISPLAY: $DISPLAY
             RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
-            ROS_DOMAIN_ID: 60
+            ROS_DOMAIN_ID: 11
         command: >
             bash -c "
             source /opt/ros/humble/setup.bash && \

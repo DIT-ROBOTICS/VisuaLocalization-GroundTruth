@@ -417,7 +417,9 @@ public:
       rst_time = msg.header.stamp;
       init_time = curr_time;
       timestamp_reset_done = true;
-      RCLCPP_INFO(this->get_logger(), "Time reset successful!");
+    }
+    if(timestamp_reset_done){
+      RCLCPP_INFO(this->get_logger(), "Time reset already done!");
     }
     else{
       RCLCPP_INFO(this->get_logger(), "Time reset haven't done!");
