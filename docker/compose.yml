@@ -7,8 +7,8 @@ x-common-vars: &common-vars
   network_mode: host
   stop_grace_period: 1s
   environment:
-    RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
-    ROS_DOMAIN_ID: 60
+    RMW_IMPLEMENTATION: $RMW_IMPLEMENTATION
+    ROS_DOMAIN_ID: $ROS_DOMAIN_ID
 services:
     ceiling-cam:
         build:
@@ -22,19 +22,7 @@ services:
         privileged: true
         volumes:
             - /dev:/dev
-            # X11 socket
-            - /tmp/.X11-unix:/tmp/.X11-unix
-            - $HOME/.Xauthority:/home/gui/.Xauthority
-            # Wayland socket
-            - $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:/tmp/$WAYLAND_DISPLAY
-            # GUI configuration
-            - $PWD/../rtspcam-pkg:/home/ceiling-cam/vision-ws/src/rtsp_ros
-        device_cgroup_rules:
-            - "c 81:* rmw"
-        environment:
-            DISPLAY: $DISPLAY
-            RMW_IMPLEMENTATION: rmw_cyclonedds_cpp # rmw_cyclonedds_cpp | rmw_fastrtps_cpp
-            ROS_DOMAIN_ID: 60
+            - $LOCAL_WORKSPACE_FOLDER/packages/rtspcam-pkg:/home/ceiling-cam/vision-ws/src/rtsp_ros
         command: >
             bash -c "
             source /opt/ros/humble/setup.bash && \
@@ -52,7 +40,7 @@ services:
         image: vision-main:groundtruth
         container_name: groundtruth
         volumes:
-            - $PWD/../groundtruth-pkg:/home/groundtruth/vision-ws/src/aruco-ros
+            - $LOCAL_WORKSPACE_FOLDER/packages/groundtruth-pkg:/home/groundtruth/vision-ws/src/aruco-ros
         command: >
             bash -c "
             source /opt/ros/humble/setup.bash && \
