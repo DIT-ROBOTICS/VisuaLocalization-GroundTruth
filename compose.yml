@@ -1,0 +1,32 @@
+x-common-vars: &common-vars
+  tty: true
+  stdin_open: true
+  ipc: host
+  network_mode: host
+  stop_grace_period: 1s
+  environment:
+    RMW_IMPLEMENTATION: $RMW_IMPLEMENTATION
+    ROS_DOMAIN_ID: $ROS_DOMAIN_ID
+services:
+    ceiling-cam:
+        build:
+            context: .
+            target: ceiling-cam
+            args:
+                USER: ceiling-cam
+        <<: *common-vars
+        image: vision-main:ceiling-cam
+        container_name: ceiling-cam
+        privileged: true
+        volumes:
+            - /dev:/dev
+
+    groundtruth:
+        build:
+            context: .
+            target: aruco 
+            args:
+                USER: groundtruth
+        <<: *common-vars
+        image: vision-main:groundtruth
+        container_name: groundtruth  
