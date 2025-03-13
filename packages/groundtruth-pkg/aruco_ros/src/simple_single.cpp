@@ -272,7 +272,7 @@ public:
 
     if (true) {
       builtin_interfaces::msg::Time curr_stamp = msg->header.stamp;
-      curr_time = curr_stamp;
+      //curr_time = curr_stamp;
       cv_bridge::CvImagePtr cv_ptr;
       try {
         cv_ptr = cv_bridge::toCvCopy(*msg, sensor_msgs::image_encodings::RGB8);
@@ -310,7 +310,8 @@ public:
             poseMsg.header = stampedTransform.header;
             tf2::toMsg(transform, poseMsg.pose);
             poseMsg.header.frame_id = reference_frame;
-            if(!timestamp_reset_done){
+            poseMsg.header.stamp = curr_time;
+            /*if(!timestamp_reset_done){
               poseMsg.header.stamp = curr_stamp;
             }
             else{
@@ -326,7 +327,7 @@ public:
                 poseMsg.header.stamp.nanosec -= 1000000000;
                 poseMsg.header.stamp.sec += 1;
               }
-            }
+            }*/
             /*poseMsg.pose.position.x = stampedTransform.transform.translation.x;
             poseMsg.pose.position.y = stampedTransform.transform.translation.y;
             poseMsg.pose.position.z = stampedTransform.transform.translation.z;*/
@@ -423,17 +424,12 @@ public:
 
   void timer_set_callback(const geometry_msgs::msg::PoseWithCovarianceStamped &msg)
   {
-    if(!timestamp_reset_done){
+    curr_time = msg.header.stamp;
+    /*if(!timestamp_reset_done){
       rst_time = msg.header.stamp;
       init_time = curr_time;
       timestamp_reset_done = true;
-    }
-    if(timestamp_reset_done){
-      RCLCPP_INFO(this->get_logger(), "Time reset already done!");
-    }
-    else{
-      RCLCPP_INFO(this->get_logger(), "Time reset haven't done!");
-    }
+    }*/
   }
 
 //  void reconf_callback(aruco_ros::ArucoThresholdConfig & config, uint32_t level)
