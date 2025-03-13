@@ -95,13 +95,17 @@ private:
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+  double tf_mat[3][3] = {
+    {0.92336732,  0.02072291,  0.07946876},
+    {-0.02435102,0.9316984,0.04001703},
+    {-0.00669096,  0.0018427, 1.0}
+  };
 
 public:
   ArucoSimple()
   : Node("single"), cam_info_received(false), timestamp_reset_done(false)
   {
   }
-
   bool setup()
   {
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
@@ -323,9 +327,15 @@ public:
                 poseMsg.header.stamp.sec += 1;
               }
             }
-            poseMsg.pose.position.x = stampedTransform.transform.translation.x;
+            /*poseMsg.pose.position.x = stampedTransform.transform.translation.x;
             poseMsg.pose.position.y = stampedTransform.transform.translation.y;
+            poseMsg.pose.position.z = stampedTransform.transform.translation.z;*/
+            //
+            double normalize_p = (tf_mat[2][0]*stampedTransform.transform.translation.x + tf_mat[2][1]*stampedTransform.transform.translation.y + tf_mat[2][2]*1.0);
+            poseMsg.pose.position.x = (tf_mat[0][0]*stampedTransform.transform.translation.x + tf_mat[0][1]*stampedTransform.transform.translation.y + tf_mat[0][2]*1.0) / normalize_p;
+            poseMsg.pose.position.y = (tf_mat[1][0]*stampedTransform.transform.translation.x + tf_mat[1][1]*stampedTransform.transform.translation.y + tf_mat[1][2]*1.0) / normalize_p;
             poseMsg.pose.position.z = stampedTransform.transform.translation.z;
+            //
             poseMsg.pose.orientation = stampedTransform.transform.rotation;
             pose_pub->publish(poseMsg);
 
