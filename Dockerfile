@@ -1,5 +1,4 @@
 ARG BASE_IMAGE=ros:humble
-
 FROM ${BASE_IMAGE} AS base
 LABEL org.opencontainers.image.authors="ohin.kyuu@gmail.com"
 LABEL org.opencontainers.image.vendor="DIT-Robotics"
@@ -45,22 +44,21 @@ RUN groupadd --gid $USER_GID $USER && \
     useradd --uid $USER_UID --gid $USER_GID -ms /bin/bash $USER && \
     echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER && \
     chmod 0440 /etc/sudoers.d/$USER && \
-    echo "source /opt/ros/humble/setup.bash" >> /home/$USER/.bashrc && \
-    echo "source /home/$USER/vision-ws/install/local_setup.bash" >> /home/$USER/.bashrc
+    echo "source /opt/ros/humble/setup.bash" >> /home/$USER/.bashrc
 USER $USER
-RUN mkdir -p /home/$USER/vision-ws/src
-    # Install ROS2 Aruco package
-    # git clone --branch 0.7.0 https://github.com/ros-drivers/usb_cam.git && \
-    # rosdep update && \
-    # rosdep install -i --from-path /home/$USER/vision-ws/src --rosdistro humble -y && \
-    # cd /home/$USER/vision-ws && \
-    # /bin/bash -c "source /opt/ros/humble/setup.bash && \
-    #             colcon build --symlink-install"
+COPY packages/rtspcam-pkg /home/$USER/vision-ws/src/rtsp_ros
+RUN sudo chmod -R 777 /home/$USER/vision-ws && \
+    rosdep update && \
+    rosdep install -i --from-path /home/$USER/vision-ws/src --rosdistro humble -y && \
+    cd /home/$USER/vision-ws && \
+    /bin/bash -c "source /opt/ros/humble/setup.bash && \
+                 colcon build"
 WORKDIR /home/$USER/vision-ws
-CMD [ "/bin/bash" ]
+CMD [ "/bin/bash" , "-c", "source /opt/ros/humble/setup.bash && source /home/ceiling-cam/vision-ws/install/local_setup.bash && ros2 launch rtsp_ros rtsp_cam.launch.py" ]
+
 
 # Aruco Module
-FROM base AS aruco 
+FROM base AS aruco
 ARG USER
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
@@ -68,16 +66,14 @@ RUN groupadd --gid $USER_GID $USER && \
     useradd --uid $USER_UID --gid $USER_GID -ms /bin/bash $USER && \
     echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER && \
     chmod 0440 /etc/sudoers.d/$USER && \
-    echo "source /opt/ros/humble/setup.bash" >> /home/$USER/.bashrc && \
-    echo "source /home/$USER/vision-ws/install/local_setup.bash" >> /home/$USER/.bashrc
+    echo "source /opt/ros/humble/setup.bash" >> /home/$USER/.bashrc
 USER $USER
-RUN mkdir -p /home/$USER/vision-ws/src && \
-    # Install ROS2 Aruco package
-    git clone --branch humble-devel https://github.com/pal-robotics/aruco_ros.git /home/$USER/vision-ws/src/aruco-ros && \
+COPY packages/groundtruth-pkg /home/$USER/vision-ws/src/aruco-ros
+RUN sudo chmod -R 777 /home/$USER/vision-ws && \
     rosdep update && \
     rosdep install -i --from-path /home/$USER/vision-ws/src --rosdistro humble -y && \
     cd /home/$USER/vision-ws && \
     /bin/bash -c "source /opt/ros/humble/setup.bash && \
-                colcon build --symlink-install"
+                 colcon build"
 WORKDIR /home/$USER/vision-ws
-CMD [ "/bin/bash" ]
+CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /home/groundtruth/vision-ws/install/local_setup.bash && ros2 launch aruco_ros single.launch.py"]
